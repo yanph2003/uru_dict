@@ -171,7 +171,7 @@ while 1:
 					print("no words listed.")
 				else:
 					for i in range(len(dict)):
-						print(f"{dict[i][0]}({dict[i][1]}) - {dict[i][2]}")
+						print(f"[{i}] : {dict[i][0]}({dict[i][1]}) - {dict[i][2]}")
 					print(f"{len(dict)} "+ ("word" if len(dict) == 1 else "words") + " listed.")
 		elif op[0] == "find" or op[0] == "query":
 			flag = False
