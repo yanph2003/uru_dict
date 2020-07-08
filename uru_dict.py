@@ -134,12 +134,129 @@ def generate_pronunciation(x):
 			ret += "?"
 	return ret[::-1]
 
+def generate_word(x):
+	ret = ""
+	flag = ""
+	for i in range(len(x)):
+		if (ord("0") <= ord(x[i]) and ord(x[i]) <= ord("9")) or (ord("A") <= ord(x[i]) and ord(x[i]) <= ord("Z")) or x[i] == "'":
+			if flag == "" or flag == "n":
+				ret += x[i].lower()
+			elif flag == "u" and x[i] == "'":
+				ret += "ʊ'"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "!":
+			if flag == "" or flag == "n":
+				ret += "ı"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "^":
+			if flag == "" or flag == "n":
+				ret += "ϵ"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "a":
+			if "n" == flag:
+				ret = ret[:-1] + "տ"
+			elif "" == flag:
+				ret += "ɑ"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "d":
+			if flag == "" or flag == "u":
+				flag += "d"
+			else:
+				ret += "?"
+		elif x[i] == "e":
+			if "r" == flag:
+				ret += "ṙ"
+			elif "d" == flag or "ud" == flag:
+				ret += "ն"
+			elif "n" == flag:
+				ret = ret[:-1] + "ռ"
+			elif "" == flag:
+				ret += "ɹ"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "j":
+			if flag == "":
+				ret += "մ"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "k":
+			if flag == "":
+				ret += "ɼ"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "n":
+			if flag == "":
+				flag += "n"
+				ret += "փ"
+			else:
+				ret += "?"
+		elif x[i] == "o":
+			if flag == "":
+				ret += "ɯ"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "r":
+			if flag == "u" or flag == "":
+				flag += "r"
+			else:
+				ret += "?"
+		elif x[i] == "s":
+			if flag == "":
+				ret += "ɥ"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "t":
+			if flag == "":
+				ret += "ն"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "u":
+			if flag == "":
+				flag += "u"
+			elif flag == "ur":
+				ret += "ʊ"
+				flag = ""
+			elif flag == "r":
+				ret += "ս"
+				flag = ""
+			elif flag == "d":
+				ret += "մ"
+				flag = ""
+		elif x[i] == "v":
+			if flag == "":
+				ret += "ɺ"
+			else:
+				ret += "?"
+			flag = ""
+		elif x[i] == "y":
+			if flag == "":
+				ret += "ɰ"
+			else:
+				ret += "?"
+			flag = ""
+		else:
+			ret += "?"
+	return ret
 
 while 1:
 	try :
 		op = input().split()
 		op[0] = op[0].lower()
-		if op[0] == "exit":
+		if op[0] == "exit" or op[0] == "end":
 			break
 		elif op[0] == "sort":
 			if len(op) > 1:
@@ -171,7 +288,7 @@ while 1:
 					print("no words listed.")
 				else:
 					for i in range(len(dict)):
-						print(f"[{i}] : {dict[i][0]}({dict[i][1]}) - {dict[i][2]}")
+						print(f"[{i+1}] : {dict[i][0]}({dict[i][1]}) - {dict[i][2]}")
 					print(f"{len(dict)} "+ ("word" if len(dict) == 1 else "words") + " listed.")
 		elif op[0] == "find" or op[0] == "query":
 			flag = False
@@ -198,17 +315,27 @@ while 1:
 			if not flag:
 				print("no words found.")
 		elif op[0] == "insert" or op[0] == "add":
+			word = op[1]
 			if len(op) >= 4:
 				if op[3].lower() == "readas" or op[3].lower() == "as":
 					pronunciation = op[4]
+				elif op[3].lower() == "from" or op[3].lower() == "frompr" or op[3].lower() == "using" or op[3].lower() == "usingpr":
+					pronunciation = op[1]
+					word = generate_word(pronunciation)
+					if "?" in word:
+						print("invalid word.")
+						continue
+					for i in range(len(pronunciation)) : 
+						if pronunciation[i] == "^" : 
+							pronunciation[i] == "E"
 			else:
 				pronunciation = generate_pronunciation(op[1])
 				if "?" in pronunciation:
 					print("invalid word.")
 					continue
-			new_word = [op[1],pronunciation,op[2]]
+			new_word = [word,pronunciation,op[2]]
 			print("add:")
-			print(f"word - {op[1]}")
+			print(f"word - {word}")
 			print(f"pronunciation - {pronunciation}")
 			print(f"explanation - {op[2]}")
 			print("into dictionary? (Y/N) : ",end="")
@@ -225,10 +352,17 @@ while 1:
 					print("operation canceled.")
 					break
 		elif op[0] == "del" or op[0] == "delete" or op[0] == "remove":
+			if len(op) >= 3 and (op[2].lower() == "from" or op[2].lower() == "frompr" or op[2].lower() == "using" or op[2].lower() == "usingpr"):
+				delword = generate_word(op[1])
+				if "?" in delword:
+					print("invalid word. no words deleted.")
+					continue
+			else:
+				delword = op[1]
 			deltmp = []
 			cnt = 0
 			for word in dict:
-				if word[0] == op[1]:
+				if word[0] == delword:
 					cnt += 1
 					print(f"[{cnt}] : {word[0]}({word[1]}) - {word[2]}")
 					deltmp.append(word)
@@ -264,6 +398,28 @@ while 1:
 			dict = [word[:-1] if word[-1] == "" else word for word in dict]
 			if dict == [[]] : dict = []
 			print("dictionary reloaded from file.")
+		elif op[0] == "backup" or op[0] == "back" or op[0] == "bkup":
+			dict_file = open(file="dict.txt",mode="r",encoding="utf-8")
+			dict_bkup_file = open(file="dict_backup.txt",mode="w",encoding="utf-8")
+			dict_bkup_file.write(dict_file.read())
+			dict_file.close()
+			dict_bkup_file.close()
+			print("dictionary backuped.")
+		elif op[0] == "recover" or op[0] == "rcvr" or op[0] == "recvr" or op[0] == "recov" or op[0] == "re":
+			dict_file = open(file="dict.txt",mode="w",encoding="utf-8")
+			dict_bkup_file = open(file="dict_backup.txt",mode="r",encoding="utf-8")
+			dict_file.write(dict_bkup_file.read())
+			dict_file.close()
+			dict_bkup_file.close()
+			dict_file = open(file="dict.txt",mode="r",encoding="utf-8")
+			dict = dict_file.read()
+			if len(dict) and dict[-1] == "\n" : dict = dict[:-1]
+			dict = dict.split("\n")
+			dict_file.close()
+			dict = [word.split(" ") for word in dict]
+			dict = [word[:-1] if word[-1] == "" else word for word in dict]
+			if dict == [[]] : dict = []
+			print("dictionary recovered.")
 		else:
 			print("unknown command!")
 	except Exception as e :
