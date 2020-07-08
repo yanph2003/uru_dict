@@ -255,6 +255,7 @@ def generate_word(x):
 while 1:
 	try :
 		op = input().split()
+		if len(op) == 0 : continue
 		op[0] = op[0].lower()
 		if op[0] == "exit" or op[0] == "end":
 			break
@@ -420,6 +421,8 @@ while 1:
 			dict = [word[:-1] if word[-1] == "" else word for word in dict]
 			if dict == [[]] : dict = []
 			print("dictionary recovered.")
+		elif op[0] == "fuck" or op[0] == "fuckyou":
+			print("ah, fuck you man.")
 		else:
 			print("unknown command!")
 	except Exception as e :
