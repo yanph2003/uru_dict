@@ -46,7 +46,6 @@ def str_cmp(x,y):
 
 def dict_cmp_mid(x,y):
 	return str_cmp(x[0],y[0])
-# def dict_cmp_modern(x,y)
 
 def dict_cmp_modern(x,y):
 	if x[1] < y[1] : return -1
@@ -54,8 +53,8 @@ def dict_cmp_modern(x,y):
 	else : return 0
 
 def dict_cmp_explanation(x,y):
-	if x[2] < y[2] : return -1
-	elif x[2] > y[2] : return 1
+	if x[3] < y[3] : return -1
+	elif x[3] > y[3] : return 1
 	else : return 0
 
 def generate_pronunciation(x):
@@ -289,14 +288,16 @@ while 1:
 					print("no words listed.")
 				else:
 					for i in range(len(dict)):
-						print(f"[{i+1}] : {dict[i][0]}({dict[i][1]}) - {dict[i][2]}")
+						print(f"[{i+1}] : {dict[i][0]}({dict[i][1]}) - [{dict[i][2]}] {dict[i][3]}")
 					print(f"{len(dict)} "+ ("word" if len(dict) == 1 else "words") + " listed.")
+			else:
+				print("unknown category.")
 		elif op[0] == "find" or op[0] == "query":
 			flag = False
 			for i in range(len(dict)):
 				if (op[1] in dict[i][0]) if (len(op) >= 3 and (op[2] == "inclusive" or op[2] == "included" or op[2] == "include" or op[2] == "in")) else (dict[i][0] == op[1]):
 					flag = True
-					print(f"{dict[i][0]}({dict[i][1]}) : {dict[i][2]}")
+					print(f"{dict[i][0]}({dict[i][1]}) : [{dict[i][2]}] {dict[i][3]}")
 			if not flag:
 				print("no explanations found.")
 		elif op[0] == "findpronunciation" or op[0] == "querypronunciation" or op[0] == "findpr" or op[0] == "querypr":
@@ -304,23 +305,23 @@ while 1:
 			for i in range(len(dict)):
 				if (op[1] in dict[i][1]) if (len(op) >= 3 and (op[2] == "inclusive" or op[2] == "included" or op[2] == "include" or op[2] == "in")) else (dict[i][1] == op[1]):
 					flag = True
-					print(f"{dict[i][1]}({dict[i][0]}) : {dict[i][2]}")
+					print(f"{dict[i][1]}({dict[i][0]}) : [{dict[i][2]}] {dict[i][3]}")
 			if not flag:
 				print("no explanations found.")
 		elif op[0] == "findexp" or op[0] == "queryexp" or op[0] == "findexplanation" or op[0] == "queryexplanation" or op[0] == "findexpl" or op[0] == "queryexpl":
 			flag = False
 			for i in range(len(dict)):
-				if (op[1] in dict[i][2]) if (len(op) >= 3 and (op[2] == "inclusive" or op[2] == "included" or op[2] == "include" or op[2] == "in")) else (dict[i][2] == op[1]):
+				if (op[1] in dict[i][3]) if (len(op) >= 3 and (op[2] == "inclusive" or op[2] == "included" or op[2] == "include" or op[2] == "in")) else (dict[i][3] == op[1]):
 					flag = True
-					print(f"{dict[i][2]} : {dict[i][0]}({dict[i][1]})")
+					print(f"{dict[i][3]} [{dict[i][2]}]: {dict[i][0]}({dict[i][1]})")
 			if not flag:
 				print("no words found.")
 		elif op[0] == "insert" or op[0] == "add":
 			word = op[1]
-			if len(op) >= 4:
-				if op[3].lower() == "readas" or op[3].lower() == "as":
-					pronunciation = op[4]
-				elif op[3].lower() == "from" or op[3].lower() == "frompr" or op[3].lower() == "using" or op[3].lower() == "usingpr":
+			if len(op) >= 5:
+				if op[4].lower() == "readas" or op[4].lower() == "as":
+					pronunciation = op[5]
+				elif op[4].lower() == "from" or op[4].lower() == "frompr" or op[4].lower() == "using" or op[4].lower() == "usingpr":
 					pronunciation = op[1]
 					word = generate_word(pronunciation)
 					if "?" in word:
@@ -334,11 +335,11 @@ while 1:
 				if "?" in pronunciation:
 					print("invalid word.")
 					continue
-			new_word = [word,pronunciation,op[2]]
+			new_word = [word,pronunciation,op[2],op[3]]
 			print("add:")
 			print(f"word - {word}")
 			print(f"pronunciation - {pronunciation}")
-			print(f"explanation - {op[2]}")
+			print(f"explanation - [{op[2]}] {op[3]}")
 			print("into dictionary? (Y/N) : ",end="")
 			while 1:
 				tmp = input().split()
@@ -354,19 +355,23 @@ while 1:
 					break
 		elif op[0] == "del" or op[0] == "delete" or op[0] == "remove":
 			if len(op) >= 3 and (op[2].lower() == "from" or op[2].lower() == "frompr" or op[2].lower() == "using" or op[2].lower() == "usingpr"):
-				delword = generate_word(op[1])
-				if "?" in delword:
-					print("invalid word. no words deleted.")
-					continue
+				delword = op[1]
+				deltmp = []
+				cnt = 0
+				for word in dict:
+					if word[1] == delword:
+						cnt += 1
+						print(f"[{cnt}] : {word[0]}({word[1]}) - [{word[2]}] {word[3]}")
+						deltmp.append(word)
 			else:
 				delword = op[1]
-			deltmp = []
-			cnt = 0
-			for word in dict:
-				if word[0] == delword:
-					cnt += 1
-					print(f"[{cnt}] : {word[0]}({word[1]}) - {word[2]}")
-					deltmp.append(word)
+				deltmp = []
+				cnt = 0
+				for word in dict:
+					if word[0] == delword:
+						cnt += 1
+						print(f"[{cnt}] : {word[0]}({word[1]}) - [{word[2]}] {word[3]}")
+						deltmp.append(word)
 			if cnt == 0:
 				print("no words deleted.")
 			else:
