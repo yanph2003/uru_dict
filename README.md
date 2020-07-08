@@ -46,4 +46,4 @@ dict of uru ejo
 `fuck ([words_after_fuck]) : print "ah, fuck you man.".`  
 
 ---
-楽しく使いましょうね～
+## 楽しく使いましょうね～  
