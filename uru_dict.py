@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import functools
+import os
 
 dict_file = open(file="dict.txt",mode="r",encoding="utf-8")
 dict = dict_file.read()
@@ -330,6 +331,9 @@ while 1:
 					for i in range(len(pronunciation)) : 
 						if pronunciation[i] == "^" : 
 							pronunciation[i] == "E"
+				else:
+					print("invalid command.")
+					continue
 			else:
 				pronunciation = generate_pronunciation(op[1])
 				if "?" in pronunciation:
@@ -363,7 +367,7 @@ while 1:
 						cnt += 1
 						print(f"[{cnt}] : {word[0]}({word[1]}) - [{word[2]}] {word[3]}")
 						deltmp.append(word)
-			else:
+			elif len(op) == 2:
 				delword = op[1]
 				deltmp = []
 				cnt = 0
@@ -372,6 +376,9 @@ while 1:
 						cnt += 1
 						print(f"[{cnt}] : {word[0]}({word[1]}) - [{word[2]}] {word[3]}")
 						deltmp.append(word)
+			else:
+				print("invalid command.")
+				continue
 			if cnt == 0:
 				print("no words deleted.")
 			else:
@@ -426,6 +433,8 @@ while 1:
 			dict = [word[:-1] if word[-1] == "" else word for word in dict]
 			if dict == [[]] : dict = []
 			print("dictionary recovered.")
+		elif op[0] == "cls":
+			os.system("cls")
 		elif op[0] == "fuck" or op[0] == "fuckyou":
 			print("ah, fuck you man.")
 		else:
